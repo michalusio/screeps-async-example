@@ -1,6 +1,6 @@
-# Screeps Collab Bot
+# Screeps Async Bot
 
-Screeps Collab Bot is a Screeps AI written in Typescript.
+Screeps Async Bot is a Screeps AI written in Typescript, using some fancy Rollup plugins to convert async/await into generators under the hood!
 
 ## Basic Usage
 
