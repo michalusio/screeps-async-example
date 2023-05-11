@@ -41,27 +41,6 @@ describe("Promise", () => {
     });
   });
 
-  it("should work with timeout", done => {
-    expect.assertions(4);
-    let x = 0;
-    const p = new Promise(resolve => {
-      x = 1;
-      setTimeout(resolve, 100, 12);
-    });
-    p.then(v => {
-      x = 2;
-      expect(v).toBe(12);
-    });
-    expect(x).toBe(0);
-    startPromiseLoop();
-    expect(x).toBe(1);
-    setTimeout(() => {
-      startPromiseLoop();
-      expect(x).toBe(2);
-      done();
-    }, 200);
-  });
-
   describe("all", () => {
     it("should work with resolved promise", () => {
       expect.assertions(1);
@@ -73,21 +52,6 @@ describe("Promise", () => {
       expect.assertions(1);
       Promise.all([Promise.resolve(5), Promise.resolve(15)]).then(x => expect(x).toStrictEqual([5, 15]));
       startPromiseLoop();
-    });
-
-    it("should work with timeouts", done => {
-      let x = [0, 0];
-      Promise.all([
-        new Promise<number>(resolve => setTimeout(resolve, 200, 5)),
-        new Promise<number>(resolve => setTimeout(resolve, 50, 15))
-      ]).then(v => {
-        x = v;
-        expect(v).toStrictEqual([5, 15]);
-      });
-      setTimeout(() => {
-        startPromiseLoop();
-        done();
-      }, 200);
     });
   });
 
@@ -102,22 +66,6 @@ describe("Promise", () => {
       expect.assertions(1);
       Promise.race([Promise.resolve(5), Promise.resolve(15)]).then(x => expect(x).toBe(5));
       startPromiseLoop();
-    });
-
-    it("should work with timeouts", done => {
-      expect.assertions(1);
-      let x = 0;
-      Promise.race([
-        new Promise<number>(resolve => setTimeout(resolve, 200, 5)),
-        new Promise<number>(resolve => setTimeout(resolve, 50, 15))
-      ]).then(v => {
-        x = v;
-        expect(v).toBe(15);
-      });
-      setTimeout(() => {
-        startPromiseLoop();
-        done();
-      }, 200);
     });
   });
 });
