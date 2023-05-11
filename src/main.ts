@@ -1,5 +1,7 @@
-import { startPromiseLoop } from "utils";
+import { startPromiseLoop, overWritePromise } from "utils";
 import { deleteOldCreepMemory, memhack } from "wrappers";
+
+overWritePromise();
 
 export const loop = memhack(() => {
   deleteOldCreepMemory();
