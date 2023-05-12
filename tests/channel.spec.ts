@@ -75,6 +75,19 @@ describe("Channel", () => {
     startPromiseLoop();
   }, 1);
 
+  it("sending should also receive done", () => {
+    expect.assertions(2);
+
+    const channel = Channel<number>();
+
+    channel.sender.close();
+
+    channel.sender.send(1).then(v => expect(isDone(v)).toBeTruthy());
+    channel.sender.send(1).then(v => expect(isDone(v)).toBeTruthy());
+
+    startPromiseLoop();
+  }, 1);
+
   it("should send then close", () => {
     expect.assertions(3);
 
