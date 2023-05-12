@@ -13,6 +13,34 @@ describe("Promise", () => {
     startPromiseLoop();
   });
 
+  it("resolving after ending should throw", () => {
+    expect.assertions(1);
+    new Promise(resolve => {
+      resolve(4);
+      resolve(5);
+    });
+
+    try {
+      startPromiseLoop();
+    } catch (err) {
+      expect(err).toBe(5);
+    }
+  });
+
+  it("rejecting after ending should throw", () => {
+    expect.assertions(1);
+    new Promise((resolve, reject) => {
+      resolve(4);
+      reject(5);
+    });
+
+    try {
+      startPromiseLoop();
+    } catch (err) {
+      expect(err).toBe(5);
+    }
+  });
+
   describe("should resolve", () => {
     it("when then'ed", () => {
       expect.assertions(1);

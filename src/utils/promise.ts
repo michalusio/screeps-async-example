@@ -147,7 +147,7 @@ class MyPromise<T> {
         if (this.state === "Rejected" && this.thens.length === 0) {
           console.info(`Uncatched promise: ${this.data}`);
         }
-      } else if (data instanceof Error) throw data;
+      } else throw data;
     };
     const resolveFunction: (value: T) => void = setState("Resolved");
     const rejectFunction: (error: unknown) => void = setState("Rejected");
