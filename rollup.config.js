@@ -15,9 +15,9 @@ export default {
   },
 
   plugins: [
-    //terser({toplevel: false}),
     resolve({ rootDir: "src" }),
     commonjs(),
+    //terser(),
     typescript({ tsconfig: "./tsconfig.json" }),
     async()
   ]
