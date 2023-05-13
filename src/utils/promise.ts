@@ -18,7 +18,7 @@ class MyPromise<T> {
     addToQueue: boolean = true
   ) {
     if (addToQueue) {
-      promiseQueue.push(this);
+      promiseQueue.add(this);
     }
   }
 
@@ -85,7 +85,7 @@ class MyPromise<T> {
       } else reject(this.data);
     }, false);
     if (this.state === "Rejected" || this.state === "Resolved") {
-      promiseQueue.push(promise);
+      promiseQueue.add(promise);
     } else {
       promise.state = "Suspended";
       this.thens.push(promise);
@@ -106,7 +106,7 @@ class MyPromise<T> {
       }
     }, false);
     if (this.state === "Rejected" || this.state === "Resolved") {
-      promiseQueue.push(promise);
+      promiseQueue.add(promise);
     } else {
       promise.state = "Suspended";
       this.thens.push(promise);
@@ -123,7 +123,7 @@ class MyPromise<T> {
       }
     }, false);
     if (this.state === "Rejected" || this.state === "Resolved") {
-      promiseQueue.push(promise);
+      promiseQueue.add(promise);
     } else {
       promise.state = "Suspended";
       this.thens.push(promise);
@@ -136,14 +136,11 @@ class MyPromise<T> {
       if (this.state === "Running") {
         this.state = state;
         this.data = data;
-        promiseQueue.splice(
-          promiseQueue.findIndex(p => p === this),
-          1
-        );
+        promiseQueue.delete(this);
         this.thens.forEach(p => {
           p.state = "Waiting";
+          promiseQueue.add(p);
         });
-        promiseQueue.push(...this.thens);
         if (this.state === "Rejected" && this.thens.length === 0) {
           console.info(`Uncatched promise: ${this.data}`);
         }
@@ -163,15 +160,25 @@ class MyPromise<T> {
    * Starts running the promises. Finishes only when all the promises have been finalized.
    */
   public static startPromiseLoop(): void {
-    while (promiseQueue.length) {
-      const promise = promiseQueue.find(p => p.state === "Waiting");
+    while (promiseQueue.size) {
+      const promise = MyPromise.findWaitingPromise();
       if (!promise) break;
       promise.runBody();
     }
   }
+
+  private static findWaitingPromise(): MyPromise<unknown> | undefined {
+    const entries = promiseQueue.values();
+    let result = entries.next();
+    while (!result.done) {
+      if (result.value.state === "Waiting") return result.value;
+      result = entries.next();
+    }
+    return undefined;
+  }
 }
 
-const promiseQueue: MyPromise<unknown>[] = [];
+const promiseQueue: Set<MyPromise<unknown>> = new Set<MyPromise<unknown>>();
 
 export const overWritePromise = () => (globalThis.Promise = MyPromise as any);
 export const startPromiseLoop = MyPromise.startPromiseLoop;
