@@ -1,3 +1,5 @@
+import { Averager } from "./average";
+
 /**
  * Running - the promise is running and waiting for resolution
  * Resolved - the promise has been succesfully resolved and is caching the value
@@ -163,11 +165,22 @@ class MyPromise<T> {
     while (promiseQueue.size) {
       const promise = MyPromise.findWaitingPromise();
       if (!promise) break;
+
+      const cpuBefore = Game.cpu.getUsed();
+
       promise.runBody();
+
+      const cpuAfter = Game.cpu.getUsed();
+      const cpuUsed = cpuAfter - cpuBefore;
+      promiseAverageTime.add(cpuUsed);
+
+      const cpuLeft = Game.cpu.limit - Game.cpu.getUsed();
+      const cpuEstimate = promiseAverageTime.average() * 1.5;
+      if (cpuLeft < cpuEstimate) break;
     }
   }
 
-  private static findWaitingPromise(): MyPromise<unknown> | undefined {
+  public static findWaitingPromise(): MyPromise<unknown> | undefined {
     const entries = promiseQueue.values();
     let result = entries.next();
     while (!result.done) {
@@ -179,6 +192,8 @@ class MyPromise<T> {
 }
 
 const promiseQueue: Set<MyPromise<unknown>> = new Set<MyPromise<unknown>>();
+const promiseAverageTime: Averager = Averager();
 
 export const overWritePromise = () => (globalThis.Promise = MyPromise as any);
 export const startPromiseLoop = MyPromise.startPromiseLoop;
+export const hasPromisesInLoop = () => !!MyPromise.findWaitingPromise();

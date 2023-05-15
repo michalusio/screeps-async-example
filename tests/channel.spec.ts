@@ -1,8 +1,16 @@
 import { Channel, isDone } from "../src/utils/channel";
 import { overWritePromise, startPromiseLoop } from "../src/utils/promise";
+import { mockGlobal } from "./utils/mocking";
 
 beforeEach(() => {
+  let time = Date.now();
   overWritePromise();
+  mockGlobal("Game", {
+    cpu: {
+      getUsed: () => Date.now() - time,
+      limit: 100
+    }
+  });
 });
 
 describe("Channel", () => {
