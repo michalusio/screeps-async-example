@@ -191,6 +191,12 @@ class MyPromise<T> {
   }
 }
 
+export type AsyncResult<T, E> = Omit<Promise<T>, "catch"> & {
+  catch<TResult = never>(
+    onrejected?: ((reason: E) => TResult | PromiseLike<TResult>) | null | undefined
+  ): Promise<T | TResult>;
+};
+
 const promiseQueue: Set<MyPromise<unknown>> = new Set<MyPromise<unknown>>();
 const promiseAverageTime: Averager = Averager();
 
