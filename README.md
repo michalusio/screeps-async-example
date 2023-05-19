@@ -2,6 +2,20 @@
 
 Screeps Async Bot is a Screeps AI written in Typescript, using some fancy Rollup plugins to convert async/await into generators under the hood!
 
+## Features
+
+- Rollup pipeline that automagically converts async/await into generators using a custom implementation of Promise.
+
+- The promises are executed until the CPU left is lower than 1.5x the average time it takes to initialize a Promise.
+
+- The promises are persisted between ticks. You can modify it to save them somewhere in case of a reset, though.
+
+- Example async implementations for Creep and Spawn are here, you can always replace them with your own.
+
+- A Channel implementation - one Promise can send a message while the other can await for it.
+
+- Promises and Channels have a suite of tests for it.
+
 ## Basic Usage
 
 You will need:
